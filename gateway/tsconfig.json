@@ -28,6 +28,9 @@
       "@middleware/*": ["./src/middleware/*"],
       "@cascade/*": ["./src/cascade/*"],
       "@discovery/*": ["./src/discovery/*"],
+       "@sites/*":      ["./src/sites/*"],
+"@license/*":    ["./src/license/*"],
+"@status/*":     ["./src/status/*"],
       "@streaming/*": ["./src/streaming/*"],
       "@websocket/*": ["./src/websocket/*"]
     }

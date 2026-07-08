@@ -1,11 +1,15 @@
-import { getHealthScore, computeHealthScore, getUsageStat } from '@db/redis/redis.usage'
-import { getChatAdapterForModel } from '@providers/chat/chat.registry'
+import {
+    getHealthScore,
+    computeHealthScore,
+    getUsageStat
+} from "@db/redis/redis.usage";
+import { getChatAdapterForModel } from "@providers/chat/chat.registry";
 
 export interface RankedModel {
-  modelId: string
-  provider: string
-  healthScore: number
-  configured: boolean
+    modelId: string;
+    provider: string;
+    healthScore: number;
+    configured: boolean;
 }
 
 /**
@@ -28,39 +32,44 @@ export interface RankedModel {
  * than silently disappearing.
  */
 export async function buildRankedChain(
-  chain: string[],
-  preferredModel: string
+    chain: string[],
+    preferredModel: string
 ): Promise<RankedModel[]> {
-  const scored = await Promise.all(
-    chain.map(async (modelId): Promise<RankedModel> => {
-      const adapter = getChatAdapterForModel(modelId)
-      const configured = !!adapter && adapter.isConfigured()
-      const provider = adapter?.id ?? modelId.split('/')[0] ?? modelId
+    const scored = await Promise.all(
+        chain.map(async (modelId): Promise<RankedModel> => {
+            const adapter = getChatAdapterForModel(modelId);
+            const configured = !!adapter && adapter.isConfigured();
+            const provider = adapter?.id ?? modelId.split("/")[0] ?? modelId;
 
-      if (!configured) {
-        return { modelId, provider, healthScore: -1, configured: false }
-      }
+            if (!configured) {
+                return {
+                    modelId,
+                    provider,
+                    healthScore: -1,
+                    configured: false
+                };
+            }
 
-      const score = await getHealthScore(provider)
-      return { modelId, provider, healthScore: score, configured: true }
-    })
-  )
+            const score = await getHealthScore(provider);
+            return { modelId, provider, healthScore: score, configured: true };
+        })
+    );
 
-  // Stable sort: configured models ranked by health, unconfigured at the end
-  const ranked = scored.sort((a, b) => {
-    if (a.configured && !b.configured) return -1
-    if (!a.configured && b.configured) return 1
-    return b.healthScore - a.healthScore
-  })
+    // Stable sort: configured models ranked by health, unconfigured at the end
+    const ranked = scored.sort((a, b) => {
+        if (a.configured && !b.configured) return -1;
+        if (!a.configured && b.configured) return 1;
+        return b.healthScore - a.healthScore;
+    });
 
-  // Promote the preferred model to position 0 if it's in the chain
-  const preferredIdx = ranked.findIndex((m) => m.modelId === preferredModel)
-  if (preferredIdx > 0) {
-    const [preferred] = ranked.splice(preferredIdx, 1)
-    ranked.unshift(preferred!)
-  }
+    // Promote the preferred model to position 0 if it's in the chain
+    const preferredIdx = ranked.findIndex(m => m.modelId === preferredModel);
+    if (preferredIdx > 0) {
+        const [preferred] = ranked.splice(preferredIdx, 1);
+        ranked.unshift(preferred!);
+    }
 
-  return ranked
+    return ranked;
 }
 
 /**
@@ -71,23 +80,27 @@ export async function buildRankedChain(
  * Returns the trigger reason if a threshold is crossed, null otherwise.
  */
 export function checkThresholds(params: {
-  accumulatedCostUsd: number
-  accumulatedTokens: number
-  contextWindow: number
-  profile: import('@config/config.schema').CascadeProfile
-}): 'cost_cap' | 'token_threshold' | null {
-  const { accumulatedCostUsd, accumulatedTokens, contextWindow, profile } = params
+    accumulatedCostUsd: number;
+    accumulatedTokens: number;
+    contextWindow: number;
+    profile: import("@config/config.schema").CascadeProfile;
+}): "cost_cap" | "token_threshold" | null {
+    const { accumulatedCostUsd, accumulatedTokens, contextWindow, profile } =
+        params;
 
-  if (profile.cost_cap_usd > 0 && accumulatedCostUsd >= profile.cost_cap_usd) {
-    return 'cost_cap'
-  }
-
-  if (contextWindow > 0) {
-    const fraction = accumulatedTokens / contextWindow
-    if (fraction >= profile.token_threshold) {
-      return 'token_threshold'
+    if (
+        profile.cost_cap_usd > 0 &&
+        accumulatedCostUsd >= profile.cost_cap_usd
+    ) {
+        return "cost_cap";
     }
-  }
 
-  return null
+    if (contextWindow > 0) {
+        const fraction = accumulatedTokens / contextWindow;
+        if (fraction >= profile.token_threshold) {
+            return "token_threshold";
+        }
+    }
+
+    return null;
 }

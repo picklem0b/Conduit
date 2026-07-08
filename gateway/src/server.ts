@@ -1,12 +1,13 @@
 import { Hono } from "hono";
 import { createSocketHandlers } from "./websocket/socket.hub";
+import { createDocsApp } from "./openapi";
 
 // ── Middleware ─────────────────────────────────────────────────────────────────
 import { corsMiddleware } from "./middleware/middleware.cors";
 import {
-   requestIdMiddleware,
-   errorHandler,
-   notFoundHandler
+  requestIdMiddleware,
+  errorHandler,
+  notFoundHandler
 } from "./middleware/middleware.error";
 import { siteMiddleware } from "./middleware/middleware.site";
 import { versionMiddleware } from "./middleware/middleware.version";
@@ -14,9 +15,9 @@ import { versionMiddleware } from "./middleware/middleware.version";
 // ── Routes ────────────────────────────────────────────────────────────────────
 import { keysRoute } from "./routes/keys/keys.route";
 import {
-   statusRoute,
-   handleProvidersHealth,
-   handleModels
+  statusRoute,
+  handleProvidersHealth,
+  handleModels
 } from "./routes/status/status.route";
 import { sitesRoute } from "./routes/sites/sites.route";
 import { licenseRoute } from "./routes/license/license.route";
@@ -48,54 +49,58 @@ import { codeRoute } from "./routes/code/code.route";
  *   /api/discovery/*, /api/models, /api/providers/*
  */
 export function createApp(): Hono {
-   const app = new Hono();
+  const app = new Hono();
 
-   // ── Global middleware ──────────────────────────────────────────────────────
-   app.use("*", requestIdMiddleware);
-   app.use("*", corsMiddleware);
-   app.use("*", siteMiddleware);
-   app.use("*", versionMiddleware);
+  // ── Swagger UI + OpenAPI spec — served at / and /openapi.json ────────────
+  // Mounted before middleware so the docs page has no CORS/site/version overhead.
+  app.route("/", createDocsApp());
 
-   // ── Public routes ──────────────────────────────────────────────────────────
+  // ── Global middleware ──────────────────────────────────────────────────────
+  app.use("*", requestIdMiddleware);
+  app.use("*", corsMiddleware);
+  app.use("*", siteMiddleware);
+  app.use("*", versionMiddleware);
 
-   // GET /api/health  GET /api/status
-   app.route("/api", statusRoute);
+  // ── Public routes ──────────────────────────────────────────────────────────
 
-   // Key management — open so users can always fix a broken config
-   app.route("/api/keys", keysRoute);
+  // GET /api/health  GET /api/status
+  app.route("/api", statusRoute);
 
-   // Site config — interfaces need this before they can render
-   app.route("/api/sites", sitesRoute);
+  // Key management — open so users can always fix a broken config
+  app.route("/api/keys", keysRoute);
 
-   // License — needed to show update banners regardless of version lock
-   app.route("/api/license", licenseRoute);
+  // Site config — interfaces need this before they can render
+  app.route("/api/sites", sitesRoute);
 
-   // ── Version-locked routes ──────────────────────────────────────────────────
+  // License — needed to show update banners regardless of version lock
+  app.route("/api/license", licenseRoute);
 
-   // Provider discovery (tester interface)
-   app.route("/api/discovery", discoveryRoute);
+  // ── Version-locked routes ──────────────────────────────────────────────────
 
-   // Chat streaming + conversation history
-   app.route("/api/chat", chatRoute);
+  // Provider discovery (tester interface)
+  app.route("/api/discovery", discoveryRoute);
 
-   // Image generation
-   app.route("/api/media", mediaRoute);
+  // Chat streaming + conversation history
+  app.route("/api/chat", chatRoute);
 
-   // Web search
-   app.route("/api/search", searchRoute);
+  // Image generation
+  app.route("/api/media", mediaRoute);
 
-   // Code execution
-   app.route("/api/code", codeRoute);
+  // Web search
+  app.route("/api/search", searchRoute);
 
-   // Provider health + model catalogue — version-locked, mounted directly
-   app.get("/api/providers/health", handleProvidersHealth);
-   app.get("/api/models", handleModels);
+  // Code execution
+  app.route("/api/code", codeRoute);
 
-   // ── Error handling ─────────────────────────────────────────────────────────
-   app.notFound(notFoundHandler);
-   app.onError(errorHandler);
+  // Provider health + model catalogue — version-locked, mounted directly
+  app.get("/api/providers/health", handleProvidersHealth);
+  app.get("/api/models", handleModels);
 
-   return app;
+  // ── Error handling ─────────────────────────────────────────────────────────
+  app.notFound(notFoundHandler);
+  app.onError(errorHandler);
+
+  return app;
 }
 
 // ── WebSocket handler export ───────────────────────────────────────────────────

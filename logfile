@@ -10,3 +10,11 @@
 2026-07-06 18:39:13.002 SAST [15648] LOG:  checkpoint complete: wrote 961 buffers (5.9%), wrote 1 SLRU buffers; 1 WAL file(s) added, 0 removed, 0 recycled; write=97.399 s, sync=0.097 s, total=97.656 s; sync files=346, longest=0.005 s, average=0.001 s; distance=4373 kB, estimate=4373 kB; lsn=0/1CBE928, redo lsn=0/1BF85B0
 2026-07-06 18:42:35.106 SAST [15648] LOG:  checkpoint starting: time
 2026-07-06 18:42:50.078 SAST [15648] LOG:  checkpoint complete: wrote 148 buffers (0.9%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=14.932 s, sync=0.023 s, total=14.974 s; sync files=67, longest=0.004 s, average=0.001 s; distance=835 kB, estimate=4019 kB; lsn=0/1CC9390, redo lsn=0/1CC9300
+2026-07-08 14:05:05.464 SAST [28753] FATAL:  role "conduit" does not exist
+2026-07-08 14:07:25.820 SAST [29704] FATAL:  role "conduit" does not exist
+2026-07-08 14:07:41.593 SAST [29806] FATAL:  role "conduit" does not exist
+2026-07-08 14:11:54.245 SAST [31119] FATAL:  role "conduit" does not exist
+2026-07-08 14:15:14.582 SAST [31922] FATAL:  role "conduit" does not exist
+2026-07-08 14:18:20.707 SAST [1087] FATAL:  role "conduit" does not exist
+2026-07-08 14:30:16.780 SAST [6011] FATAL:  role "conduit" does not exist
+2026-07-08 14:33:55.629 SAST [7194] FATAL:  role "conduit" does not exist

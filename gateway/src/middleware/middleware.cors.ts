@@ -13,21 +13,22 @@ import { loadConfig } from "@config/config.loader";
  * port work without additional config.
  */
 function getAllowedOrigins(): Set<string> {
-   const config = loadConfig();
-   const origins = new Set<string>();
+    const config = loadConfig();
+    const origins = new Set<string>();
 
-   for (const host of Object.keys(config.sites)) {
-      origins.add(`https://${host}`);
-      origins.add(`http://${host}`);
-   }
+    for (const host of Object.keys(config.sites)) {
+        origins.add(`https://${host}`);
+        origins.add(`http://${host}`);
+    }
 
-   // Always allow localhost variants for local development
-   for (const port of [3000, 3001, 4000, 5173, 5174, 8080]) {
-      origins.add(`http://localhost:${port}`);
-      origins.add(`http://127.0.0.1:${port}`);
-   }
+    // Always allow localhost variants for local development
+    for (const port of [3000, 3001, 4000, 5173, 5174, 8080]) {
+        origins.add(`http://localhost:${port}`);
+        origins.add(`http://127.0.0.1:${port}`);
+        origins.add(`http://0.0.0.0:${port}`);
+    }
 
-   return origins;
+    return origins;
 }
 
 // ── Middleware ─────────────────────────────────────────────────────────────────
@@ -48,45 +49,45 @@ function getAllowedOrigins(): Set<string> {
  *   distinguish cached responses from live streams.
  */
 export const corsMiddleware: MiddlewareHandler = async (c, next) => {
-   const origin = c.req.header("Origin");
-   const isDev = process.env.NODE_ENV !== "production";
+    const origin = c.req.header("Origin");
+    const isDev = process.env.NODE_ENV !== "production";
 
-   let allowOrigin = "";
+    let allowOrigin = "";
 
-   if (isDev) {
-      // Reflect the origin back in dev — Vite HMR, arbitrary local ports
-      allowOrigin = origin ?? "*";
-   } else if (origin) {
-      const allowed = getAllowedOrigins();
-      allowOrigin = allowed.has(origin) ? origin : "";
-   }
+    if (isDev) {
+        // Reflect the origin back in dev — Vite HMR, arbitrary local ports
+        allowOrigin = origin ?? "*";
+    } else if (origin) {
+        const allowed = getAllowedOrigins();
+        allowOrigin = allowed.has(origin) ? origin : "";
+    }
 
-   // Preflight
-   if (c.req.method === "OPTIONS") {
-      if (allowOrigin) {
-         c.header("Access-Control-Allow-Origin", allowOrigin);
-         c.header(
-            "Access-Control-Allow-Methods",
-            "GET, POST, PUT, DELETE, OPTIONS"
-         );
-         c.header(
-            "Access-Control-Allow-Headers",
-            "Content-Type, Authorization, X-Request-ID, Cache-Control"
-         );
-         c.header("Access-Control-Max-Age", "86400");
-         if (origin) c.header("Vary", "Origin");
-      }
-      return c.body(null, 204);
-   }
+    // Preflight
+    if (c.req.method === "OPTIONS") {
+        if (allowOrigin) {
+            c.header("Access-Control-Allow-Origin", allowOrigin);
+            c.header(
+                "Access-Control-Allow-Methods",
+                "GET, POST, PUT, DELETE, OPTIONS"
+            );
+            c.header(
+                "Access-Control-Allow-Headers",
+                "Content-Type, Authorization, X-Request-ID, Cache-Control"
+            );
+            c.header("Access-Control-Max-Age", "86400");
+            if (origin) c.header("Vary", "Origin");
+        }
+        return c.body(null, 204);
+    }
 
-   await next();
+    await next();
 
-   if (allowOrigin) {
-      c.header("Access-Control-Allow-Origin", allowOrigin);
-      c.header(
-         "Access-Control-Expose-Headers",
-         "Content-Type, Cache-Control, X-Request-ID"
-      );
-      if (origin) c.header("Vary", "Origin");
-   }
+    if (allowOrigin) {
+        c.header("Access-Control-Allow-Origin", allowOrigin);
+        c.header(
+            "Access-Control-Expose-Headers",
+            "Content-Type, Cache-Control, X-Request-ID"
+        );
+        if (origin) c.header("Vary", "Origin");
+    }
 };

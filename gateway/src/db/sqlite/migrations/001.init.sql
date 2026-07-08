@@ -1,0 +1,3 @@
+-- SQLite equivalent of 001.init.sql
+-- No pgcrypto extension needed — SQLite has randomblob() built-in.
+-- No trigger function needed — triggers are defined inline per-table in SQLite.

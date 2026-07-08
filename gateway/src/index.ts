@@ -25,6 +25,11 @@ import { loadEnv } from "./config/config.env";
 import { loadConfig, watchConfig, unwatchConfig } from "./config/config.loader";
 import { initPostgres, closePostgres } from "./db/postgres/postgres.client";
 import { runMigrations } from "./db/postgres/postgres.migrate";
+import {
+   initSQLite,
+   closeSQLite,
+   runSQLiteMigrations
+} from "./db/sqlite/sqlite.client";
 import { primeKeyCache } from "./db/stores/key.store";
 import { initRedis, closeRedis } from "./db/redis/redis.client";
 import {
@@ -55,34 +60,58 @@ async function start(): Promise<void> {
       process.exit(1);
    }
 
-   // ── 3. Postgres ────────────────────────────────────────────────────────────
-   const pgUrl =
-      process.env.DATABASE_URL ??
-      process.env.POSTGRES_URL ??
-      (() => {
-         // Construct from individual env vars as a last resort
-         const host = process.env.PGHOST ?? "localhost";
-         const port = process.env.PGPORT ?? "5432";
-         const user = process.env.PGUSER ?? "conduit";
-         const pass = process.env.PGPASSWORD ?? "";
-         const db = process.env.PGDATABASE ?? "conduit";
-         return `postgresql://${user}:${pass}@${host}:${port}/${db}`;
-      })();
+   // ── 3. Database ────────────────────────────────────────────────────────────
+   const useSQLite = config.data.sqlite_fallback;
 
-   try {
-      initPostgres(pgUrl);
-      console.log("[conduit] Postgres connected");
-   } catch (err) {
-      console.error("[conduit] Postgres connection failed:", err);
-      process.exit(1);
-   }
+   if (useSQLite) {
+      // SQLite fallback — for single-instance deployments without Postgres
+      console.log(
+         "[conduit] Using SQLite fallback (config.data.sqlite_fallback = true)"
+      );
+      try {
+         initSQLite();
+         console.log("[conduit] SQLite opened");
+      } catch (err) {
+         console.error("[conduit] SQLite init failed:", err);
+         process.exit(1);
+      }
 
-   // ── 4. Migrations ──────────────────────────────────────────────────────────
-   try {
-      await runMigrations();
-   } catch (err) {
-      console.error("[conduit] Migration failed:", err);
-      process.exit(1);
+      // ── 4a. SQLite migrations ───────────────────────────────────────────────
+      try {
+         await runSQLiteMigrations();
+      } catch (err) {
+         console.error("[conduit] SQLite migration failed:", err);
+         process.exit(1);
+      }
+   } else {
+      // Postgres — default for production and multi-instance deployments
+      const pgUrl =
+         process.env.DATABASE_URL ??
+         process.env.POSTGRES_URL ??
+         (() => {
+            const host = process.env.PGHOST ?? "localhost";
+            const port = process.env.PGPORT ?? "5432";
+            const user = process.env.PGUSER ?? "conduit";
+            const pass = process.env.PGPASSWORD ?? "";
+            const db = process.env.PGDATABASE ?? "conduit";
+            return `postgresql://${user}:${pass}@${host}:${port}/${db}`;
+         })();
+
+      try {
+         initPostgres(pgUrl);
+         console.log("[conduit] Postgres connected");
+      } catch (err) {
+         console.error("[conduit] Postgres connection failed:", err);
+         process.exit(1);
+      }
+
+      // ── 4b. Postgres migrations ─────────────────────────────────────────────
+      try {
+         await runMigrations();
+      } catch (err) {
+         console.error("[conduit] Migration failed:", err);
+         process.exit(1);
+      }
    }
 
    // ── 5. Key cache ───────────────────────────────────────────────────────────
@@ -185,7 +214,10 @@ async function start(): Promise<void> {
       stopLicenseCheckLoop();
       unwatchConfig();
 
-      await Promise.allSettled([closePostgres(), closeRedis()]);
+      await Promise.allSettled([
+         useSQLite ? closeSQLite() : closePostgres(),
+         closeRedis()
+      ]);
 
       console.log("[conduit] Shutdown complete");
       process.exit(0);

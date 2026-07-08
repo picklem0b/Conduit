@@ -1,0 +1,19 @@
+{
+  "name": "@conduit/license-server",
+  "version": "1.0.0",
+  "description": "Conduit license manifest signing server — issues Ed25519-signed version manifests",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts",
+    "keygen": "bun src/keygen.ts"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}

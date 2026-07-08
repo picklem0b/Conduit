@@ -1,5 +1,6 @@
 import { BaseProvider } from "../provider.base";
-import { readErrorBody, estimateCost } from "../provider.types";
+import { parseSSE, readErrorBody } from "../provider.sse";
+import { estimateCost } from "../provider.types";
 import type {
    Model,
    ProbeResult,

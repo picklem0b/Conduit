@@ -118,7 +118,7 @@ export function loadEnv(force = false): void {
          }
       }
 
-      if (key && value && !(key in process.env)) {
+      if (key && value) {
          process.env[key] = value;
       }
    }

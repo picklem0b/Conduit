@@ -2,8 +2,10 @@ import { loadEnv } from "@config/config.env";
 import { initPostgres, closePostgres } from "@db/postgres/postgres.client";
 import { runMigrations } from "@db/postgres/postgres.migrate";
 
-loadEnv();
+loadEnv(true);
 
+console.log("POSTGRES_URL =", process.env.POSTGRES_URL);
+console.log(process.env.POSTGRES_URL);
 const url = process.env.POSTGRES_URL;
 
 if (!url) {

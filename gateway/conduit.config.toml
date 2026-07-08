@@ -1,0 +1,36 @@
+[app]
+name = "Conduit"
+port = 4000
+mode = "auto"
+
+[cascade]
+
+[cascade.profiles.default]
+chain = ["groq:llama-3.3-70b-versatile"]
+token_threshold = 0.8
+cost_cap_usd = 1.0
+compress_on_handoff = false
+reverse_cascade = false
+retry_failed = true
+
+[data]
+uploads_dir = "./data/uploads"
+sqlite_fallback = false
+
+[features]
+cascade = true
+parallel = false
+log_explorer = false
+split_view = false
+voice = false
+
+[sites]
+
+[status_page]
+mirrors = []
+services = []
+
+[license]
+manifest_url = ""
+check_interval_hours = 6
+public_key = ""

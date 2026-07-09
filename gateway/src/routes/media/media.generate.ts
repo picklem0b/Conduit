@@ -2,7 +2,6 @@ import { z } from "zod";
 import type { Context } from "hono";
 import {
     getImageAdapter,
-    allImageAdapters,
     allImageModels
 } from "@providers/image/media.registry";
 import type { ImageProviderAdapter } from "@providers/image/media.types";

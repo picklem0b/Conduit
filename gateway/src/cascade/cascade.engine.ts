@@ -331,7 +331,7 @@ export async function* runCascade(
 
         // Log the cascade event for the dashboard
         if (cascadeTrigger && conversationId) {
-            logCascadeEvent({
+            const event = {
                 conversationId,
                 fromModel: ranked.modelId,
                 toModel: nextModel.modelId,
@@ -340,10 +340,13 @@ export async function* runCascade(
                     Object.entries(options.profile).length > 0
                         ? "custom"
                         : "default",
-                latencyMs: attempts.at(-1)
-                    ? Date.now() - attempts.at(-1)!.startedAt
-                    : undefined
-            }).catch(() => {}); // non-blocking — don't fail the stream on a log write error
+                ...(attempts.at(-1)
+                    ? {
+                          latencyMs: Date.now() - attempts.at(-1)!.startedAt
+                      }
+                    : {})
+            };
+            logCascadeEvent(event).catch(() => {}); // non-blocking — don't fail the stream on a log write error
         }
 
         yield {

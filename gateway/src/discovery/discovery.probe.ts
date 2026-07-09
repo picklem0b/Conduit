@@ -1,4 +1,5 @@
 import { allChatAdapters } from "@providers/chat/chat.registry";
+import type { ImageProviderAdapter } from "@providers/image/media.types";
 import { allImageAdapters } from "@providers/image/media.registry";
 import { allSearchAdapters } from "@providers/search/search.registry";
 import { setTemporaryKey, clearTemporaryKey } from "@db/stores/key.store";
@@ -8,7 +9,9 @@ import {
 } from "./discovery.capabilities";
 import type {
     ProviderCategory,
-    ModelCapability
+    ModelCapability,
+    Model,
+    ImageModel
 } from "@providers/provider.types";
 import type { BaseProvider } from "@providers/provider.base";
 
@@ -63,21 +66,23 @@ export async function probeKey(rawKey: string): Promise<DiscoveryResult> {
     const started = Date.now();
     const maskedKey = maskKey(rawKey);
 
-    const allAdapters: { adapter: BaseProvider; category: ProviderCategory }[] =
-        [
-            ...allChatAdapters().map(a => ({
-                adapter: a,
-                category: "chat" as const
-            })),
-            ...allImageAdapters().map(a => ({
-                adapter: a,
-                category: "image" as const
-            })),
-            ...allSearchAdapters().map(a => ({
-                adapter: a,
-                category: "search" as const
-            }))
-        ];
+    const allAdapters: {
+        adapter: BaseProvider<Model | ImageModel> | ImageProviderAdapter;
+        category: ProviderCategory;
+    }[] = [
+        ...allChatAdapters().map(a => ({
+            adapter: a,
+            category: "chat" as const
+        })),
+        ...allImageAdapters().map(a => ({
+            adapter: a,
+            category: "image" as const
+        })),
+        ...allSearchAdapters().map(a => ({
+            adapter: a,
+            category: "search" as const
+        }))
+    ];
 
     // Skip Ollama — it's local and doesn't use an API key
     const keyedAdapters = allAdapters.filter(e => e.adapter.id !== "ollama");
@@ -108,7 +113,7 @@ export async function probeKey(rawKey: string): Promise<DiscoveryResult> {
 
 async function probeOneAdapter(
     rawKey: string,
-    adapter: BaseProvider,
+    adapter: BaseProvider<Model | ImageModel> | ImageProviderAdapter,
     category: ProviderCategory
 ): Promise<DiscoveryMatch> {
     // Set the temporary key so the adapter uses the candidate key for this probe
@@ -116,10 +121,13 @@ async function probeOneAdapter(
 
     try {
         const probeResult = await adapter.probe();
-        const models = adapter.listModels();
-        const capabilities: ModelCapability[] = Array.from(
-            new Set(models.flatMap(m => m.capabilities))
-        );
+        const capabilities: ModelCapability[] = [];
+        if (category !== "image") {
+            const models = adapter.listModels() as Model[];
+            capabilities.push(
+                ...Array.from(new Set(models.flatMap(m => m.capabilities)))
+            );
+        }
 
         // For image/search providers, add the category-specific capability
         // if the adapter doesn't explicitly list it in model capabilities
@@ -136,7 +144,10 @@ async function probeOneAdapter(
             provider: adapter.id,
             name: adapter.name,
             category,
-            status: probeResult.status,
+            status:
+                probeResult.status === "provider_down"
+                    ? "unreachable"
+                    : probeResult.status,
             latencyMs: probeResult.latencyMs,
             modelsAvailable: probeResult.modelsAvailable,
             capabilities: described,

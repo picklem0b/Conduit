@@ -5,8 +5,7 @@ import type {
     ImageModel,
     ImageGenerateOptions,
     ImageResult,
-    ProbeResult,
-    Model
+    ProbeResult
 } from "../provider.types";
 
 const MODELS: ImageModel[] = [
@@ -39,7 +38,7 @@ interface DalleResponse {
     }[];
 }
 
-export class OpenAIImagesProvider extends BaseProvider {
+export class OpenAIImagesProvider extends BaseProvider<ImageModel> {
     readonly id = "openai-images";
     readonly name = "OpenAI Images";
     readonly category = "image" as const;
@@ -55,8 +54,8 @@ export class OpenAIImagesProvider extends BaseProvider {
         return key;
     }
 
-    listModels(): Model[] {
-        return MODELS as unknown as Model[];
+    override listModels(): ImageModel[] {
+        return MODELS;
     }
 
     listImageModels(): ImageModel[] {

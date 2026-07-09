@@ -4,8 +4,7 @@ import type {
     ImageModel,
     ImageGenerateOptions,
     ImageResult,
-    ProbeResult,
-    Model
+    ProbeResult
 } from "../provider.types";
 
 const MODELS: ImageModel[] = [
@@ -38,13 +37,13 @@ const MODELS: ImageModel[] = [
 const MODEL_MAP = new Map(MODELS.map(m => [m.id, m]));
 const API_BASE = "https://api.stability.ai";
 
-export class StabilityProvider extends BaseProvider {
+export class StabilityProvider extends BaseProvider<ImageModel> {
     readonly id = "stability";
     readonly name = "Stability AI";
     readonly category = "image" as const;
 
-    listModels(): Model[] {
-        return MODELS as unknown as Model[];
+    override listModels(): ImageModel[] {
+        return MODELS;
     }
 
     listImageModels(): ImageModel[] {

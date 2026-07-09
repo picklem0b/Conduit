@@ -21,7 +21,7 @@ import { getKey, getKeyHint } from "@db/stores/key.store";
  * Concrete adapters extend this class and implement the category-specific
  * streaming/generation interface on top.
  */
-export abstract class BaseProvider {
+export abstract class BaseProvider<TModel = Model> {
     abstract readonly id: string;
     abstract readonly name: string;
     abstract readonly category: ProviderCategory;
@@ -49,7 +49,7 @@ export abstract class BaseProvider {
         return key;
     }
 
-    abstract listModels(): Model[];
+    abstract listModels(): TModel[];
     abstract probe(): Promise<ProbeResult>;
 
     /**
@@ -59,9 +59,14 @@ export abstract class BaseProvider {
     async getHealth(): Promise<ProviderHealth> {
         const probe = await this.probe();
         const models = this.listModels();
-        const capabilities = Array.from(
-            new Set<ModelCapability>(models.flatMap(m => m.capabilities))
-        );
+        const capabilities: ModelCapability[] =
+            this.category === "image"
+                ? []
+                : Array.from(
+                      new Set<ModelCapability>(
+                          (models as Model[]).flatMap(m => m.capabilities)
+                      )
+                  );
 
         const health: ProviderHealth = {
             provider: this.id,

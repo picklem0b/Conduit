@@ -9,8 +9,7 @@ import {
 } from "@db/stores/conversation.store";
 import {
     getMessages,
-    truncateFrom,
-    deleteMessage
+    truncateFrom
 } from "@db/stores/message.store";
 
 // ── GET /api/chat/conversations ───────────────────────────────────────────────

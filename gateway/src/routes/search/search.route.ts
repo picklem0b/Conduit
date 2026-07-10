@@ -10,6 +10,7 @@ import { handleSearch, handleSearchProviders } from "./search.query";
 const searchRoute = new Hono();
 
 searchRoute.post("/", handleSearch);
+searchRoute.post("/query", handleSearch)
 searchRoute.get("/providers", handleSearchProviders);
 
 export { searchRoute };

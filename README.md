@@ -7,13 +7,20 @@ Bring any API key — chat, image generation, search, code execution — and get
 ## Deploy in 60 seconds
 
 ```bash
-git clone https://github.com/lethabokhedama-png/Conduit.git
+git clone https://github.com/picklem0b/Conduit.git
 cd Conduit
 cp .env.example .env
 docker compose up --build
 ```
 
-Gateway runs on `http://localhost:4000`
+## Docs
+
+→ [Gateway](./docs/gateway/routes.md)
+→ [Providers](./docs/gateway/providers.md)
+→ [Cascade](./docs/gateway/cascade.md)
+→ [Deployment](./docs/deployment/docker.md)
+→ [Environment](./docs/deployment/env.md)
+
 
 ## Interfaces
 
@@ -46,14 +53,6 @@ Add keys from the UI — no `.env` edits required.
 
 Edit `conduit.config.toml` for cascade profiles, feature flags, and site routing.
 Edit `.env` for secrets, ports, and connection strings.
-
-## Docs
-
-→ [Gateway](./docs/gateway/routes.md)
-→ [Providers](./docs/gateway/providers.md)
-→ [Cascade](./docs/gateway/cascade.md)
-→ [Deployment](./docs/deployment/docker.md)
-→ [Environment](./docs/deployment/env.md)
 
 ## License
 

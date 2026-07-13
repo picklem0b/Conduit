@@ -1,5 +1,7 @@
 import { create } from "zustand";
 
+const C_BLUE = "#3b82f6";
+
 export type OnboardingStep =
     | "welcome"
     | "keys"
@@ -61,8 +63,6 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
         set({ done: true });
     }
 }));
-
-const C_BLUE = "#3b82f6";
 
 export function needsOnboarding(): boolean {
     return !localStorage.getItem("conduit_onboarded");

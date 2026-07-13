@@ -22,7 +22,6 @@ export function Sheet({
     if (!open) return null;
 
     const isRight = side === "right";
-    const isBottom = side === "bottom";
 
     return (
         <>

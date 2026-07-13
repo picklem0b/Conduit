@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Copy, Trash2, Tag, Search } from "lucide-react";
+import { Plus, Copy, Trash2, Search } from "lucide-react";
 import { C } from "@/lib/tokens";
 
 interface Prompt {

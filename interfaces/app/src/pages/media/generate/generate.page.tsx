@@ -1,4 +1,4 @@
-import { Image, Wand2, ChevronDown } from "lucide-react";
+import { Image, Wand2 } from "lucide-react";
 import { C } from "@/lib/tokens";
 import { useGenerateStore } from "./generate.store";
 import { useAppStore } from "@/store/app.store";

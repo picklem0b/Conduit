@@ -99,10 +99,10 @@ export function LibraryPage() {
                                 cursor: "pointer",
                                 color: tab === item.tab ? C.text : C.dim,
                                 fontSize: 12,
-                                textAlign: "left",
+                                textAlign: "left" as const,
                                 borderRadius: 4,
                                 margin: "1px 4px",
-                                width: "calc(100% - 8px)",
+                                maxWidth: "calc(100% - 8px)",
                                 transition: "all 0.12s"
                             }}
                         >
@@ -495,21 +495,19 @@ export function LibraryPage() {
                                     </span>
                                     <span
                                         style={{
-                                            fontSize: 10,
+                                            fontSize: 9,
                                             color: C.dim,
-                                            textTransform: "uppercase",
-                                            fontFamily: C.mono,
-                                            fontSize: 9
+                                            textTransform: "uppercase" as const,
+                                            fontFamily: C.mono
                                         }}
                                     >
                                         {f.type}
                                     </span>
                                     <span
                                         style={{
-                                            fontSize: 10,
+                                            fontSize: 9,
                                             color: C.dim,
-                                            fontFamily: C.mono,
-                                            fontSize: 9
+                                            fontFamily: C.mono
                                         }}
                                     >
                                         {f.size}

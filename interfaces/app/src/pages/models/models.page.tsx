@@ -147,14 +147,9 @@ export function ModelsPage() {
     const [filterTab, setFilterTab] = useState<Tab>("All");
     const [modelTab, setModelTab] = useState<ModelTab>("Local Models");
     const [search, setSearch] = useState("");
-    const [chatModels, setChatModels] = useState<{ id: string }[]>([]);
     const { pushTerminalLine } = useAppStore();
 
-    useEffect(() => {
-        getModels()
-            .then(r => setChatModels(r.chat))
-            .catch(() => {});
-    }, []);
+    useEffect(() => {}, []);
 
     const pull = (name: string) => {
         pushTerminalLine({ text: `[ollama] pulling ${name}…`, type: "dim" });

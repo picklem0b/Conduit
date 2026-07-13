@@ -10,7 +10,7 @@ export interface ProviderInfo {
 
 export interface ModelInfo {
     id: string;
-    name: string;
+    name?: string;
     contextWindow?: number;
 }
 

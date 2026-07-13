@@ -518,7 +518,6 @@ function SidebarItem({
         <button
             onClick={onClick}
             style={{
-                width: "100%",
                 display: "flex",
                 alignItems: "center",
                 gap: 8,
@@ -528,7 +527,7 @@ function SidebarItem({
                 cursor: "pointer",
                 color: active ? C.text : C.dim,
                 fontSize: 13,
-                textAlign: "left",
+                textAlign: "left" as const,
                 borderRadius: 4,
                 margin: "1px 4px",
                 width: "calc(100% - 8px)",

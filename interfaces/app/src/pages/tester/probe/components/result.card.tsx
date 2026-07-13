@@ -1,12 +1,5 @@
-import {
-    Eye,
-    EyeOff,
-    ArrowRight,
-    CheckCircle,
-    XCircle,
-    Zap
-} from "lucide-react";
 import { useState } from "react";
+import { Eye, EyeOff, CheckCircle, XCircle } from "lucide-react";
 import { C } from "@/lib/tokens";
 import type { ProbeResult } from "../probe.store";
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Plus, X, ArrowRight } from "lucide-react";
 import { C } from "@/lib/tokens";
-import { useProjectsStore } from "./projects.store";
+import { useProjectsStore, type Project } from "./projects.store";
 import { useAppStore } from "@/store/app.store";
 
 function ModelChip({ model }: { model: string }) {
@@ -45,7 +45,7 @@ function ProjectCard({
     selected,
     onClick
 }: {
-    project: ReturnType<typeof useProjectsStore>["projects"][0];
+    project: Project;
     selected: boolean;
     onClick: () => void;
 }) {
@@ -124,7 +124,7 @@ function ProjectCard({
                         cascade
                     </span>
                 )}
-                {project.collaborators?.map(c => (
+                {project.collaborators?.map((c: string) => (
                     <span key={c} style={{ fontSize: 9, color: C.dim }}>
                         {c}
                     </span>
@@ -396,11 +396,7 @@ export function ProjectsPage() {
     );
 }
 
-function ProjectDetail({
-    project
-}: {
-    project: ReturnType<typeof useProjectsStore>["projects"][0];
-}) {
+function ProjectDetail({ project }: { project: Project }) {
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             {[

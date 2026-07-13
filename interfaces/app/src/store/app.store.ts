@@ -72,5 +72,5 @@ export const useAppStore = create<AppState>(set => ({
     sidebarOpen: true,
     setSidebarOpen: sidebarOpen => set({ sidebarOpen }),
 
-    version: "v0.3.x"
+    version: "v0.3.2"
 }));

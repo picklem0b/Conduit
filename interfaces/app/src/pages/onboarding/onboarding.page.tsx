@@ -1,4 +1,4 @@
-import { ArrowRight, Check, Key, Zap, User, Palette } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { C } from "@/lib/tokens";
 import { useOnboardingStore } from "./onboarding.store";
 import { LogoMark } from "@/components/ui/logo.ui";
@@ -114,7 +114,6 @@ function StepWelcome() {
 // ── Step: Keys ────────────────────────────────────────────────────────────────
 function StepKeys() {
     const { next, back } = useOnboardingStore();
-    const { setWorkspace } = useAppStore();
 
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>

@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { C } from "@/lib/tokens";
 import { LogoMark } from "@/components/ui/logo.ui";
-import { useOnboardingStore } from "@/pages/onboarding/onboarding.store";
-import { useAppStore } from "@/store/app.store";
+// Landing page — no store imports needed, triggers via hash
 
 // ── Inline SVG icons ──────────────────────────────────────────────────────────
 function GithubIcon() {
@@ -865,7 +864,7 @@ function Features() {
                         "ollama",
                         "stability",
                         "brave"
-                    ].map((p, i) => (
+                    ].map(p => (
                         <span
                             key={p}
                             style={{
@@ -1159,14 +1158,8 @@ function Footer() {
 
 // ── Landing page ──────────────────────────────────────────────────────────────
 export function LandingPage() {
-    const { next } = useOnboardingStore();
-    const { setWorkspace } = useAppStore();
-
-    // "Get started" → trigger onboarding (parent App.tsx detects done=false and shows modal)
     const handleGetStarted = () => {
-        // Reset onboarding so it shows fresh
         localStorage.removeItem("conduit_onboarded");
-        // Trigger re-render — App.tsx watches needsOnboarding()
         window.location.hash = "#onboard";
         window.dispatchEvent(new Event("hashchange"));
     };

@@ -141,7 +141,6 @@ export function ExperimentsPage() {
     const [results, setResults] = useState<ExperimentResult[]>([]);
     const [running, setRunning] = useState(false);
     const [diffView, setDiffView] = useState(false);
-    const [streaming, setStreaming] = useState(false);
     const { pushTerminalLine } = useAppStore();
 
     const runAll = async () => {

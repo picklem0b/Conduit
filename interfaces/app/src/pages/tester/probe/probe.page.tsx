@@ -3,7 +3,6 @@ import { ArrowRight, RefreshCw, Save } from "lucide-react";
 import { C } from "@/lib/tokens";
 import { useAppStore } from "@/store/app.store";
 import { probeKey } from "@/lib/api.lib";
-import { useProbeStore } from "./probe.store";
 import {
     KeyInput,
     ResultCard,
@@ -39,7 +38,7 @@ export function ProbePage() {
     const [provider, setProvider] = useState<string>("anthropic");
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<typeof SAMPLE_RESULT | null>(null);
-    const [error, setError] = useState("");
+    const [_error, setError] = useState("");
     const { pushTerminalLine, setTerminalTab } = useAppStore();
 
     const probe = async () => {

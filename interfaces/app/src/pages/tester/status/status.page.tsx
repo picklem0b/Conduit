@@ -2,7 +2,6 @@ import { useState, useCallback } from "react";
 import { Send, ChevronDown } from "lucide-react";
 import { C } from "@/lib/tokens";
 import { useAppStore } from "@/store/app.store";
-import { api } from "@/lib/api.lib";
 
 const METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH"] as const;
 type Method = (typeof METHODS)[number];

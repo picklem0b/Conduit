@@ -16,8 +16,6 @@ import { useAppStore } from "@/store/app.store";
 import { getModels, streamChat } from "@/lib/api.lib";
 import type { WireEvent } from "@/lib/api.lib";
 
-const PROFILES = ["quality", "balanced", "cheap", "speed", "offline"] as const;
-
 // ── Model selector pill ───────────────────────────────────────────────────────
 function ModelSelector({ models }: { models: string[] }) {
     const { selectedModel, setSelectedModel, cascadeEnabled } = useChatStore();
@@ -173,18 +171,21 @@ function CascadeChip({
 
 // ── Message bubble ────────────────────────────────────────────────────────────
 function MessageBubble({
-    role,
-    content,
-    model,
-    tokens,
-    costUsd
+    message,
+    streaming
 }: {
-    role: string;
-    content: string;
-    model?: string;
-    tokens?: number;
-    costUsd?: number;
+    message: {
+        role: string;
+        content: string;
+        model?: string;
+        tokens?: number;
+        costUsd?: number;
+        id: string;
+        createdAt: number;
+    };
+    streaming?: boolean;
 }) {
+    const { role, content, model, tokens, costUsd } = message;
     const isUser = role === "user";
     return (
         <div
@@ -719,22 +720,23 @@ export function ChatPage() {
                                 {(cascadeByIdx.get(i) ?? []).map((c, ci) => (
                                     <CascadeChip key={ci} {...c} />
                                 ))}
-                                <MessageBubble
-                                    role={msg.role}
-                                    content={msg.content}
-                                    model={msg.model}
-                                    tokens={msg.tokens}
-                                    costUsd={msg.costUsd}
-                                />
+                                <MessageBubble message={msg} />
                             </div>
                         ))}
 
                         {/* Streaming message */}
                         {isStreaming && streamContent && (
                             <MessageBubble
-                                role="assistant"
-                                content={streamContent + "▌"}
-                                model={currentModel}
+                                message={{
+                                    id: "__stream__",
+                                    role: "assistant" as const,
+                                    content: streamContent + "▌",
+                                    createdAt: Date.now(),
+                                    ...(currentModel
+                                        ? { model: currentModel }
+                                        : {})
+                                }}
+                                streaming
                             />
                         )}
                         <div ref={messagesEndRef} />

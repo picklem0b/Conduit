@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { Send, Plus, MoreHorizontal, ChevronDown } from "lucide-react";
 import { C } from "@/lib/tokens";
 import { useAppStore } from "@/store/app.store";

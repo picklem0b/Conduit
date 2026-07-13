@@ -1,5 +1,5 @@
 import { C } from "@/lib/tokens";
-import { fmtCost, fmtTokens, fmtLatency } from "@/utils/format.util";
+import { fmtCost, fmtLatency } from "@/utils/format.util";
 
 export interface SessionStats {
     totalRequests: number;

@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Search, Bookmark, Download, MapPin, User } from "lucide-react";
+import { Search, Bookmark, Download, User } from "lucide-react";
 import { C } from "@/lib/tokens";
 import { useAppStore } from "@/store/app.store";
 import { runSearch } from "@/lib/api.lib";

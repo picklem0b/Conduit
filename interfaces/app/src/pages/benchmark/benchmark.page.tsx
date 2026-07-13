@@ -1,12 +1,19 @@
 import { useState, useCallback } from "react";
-import { Play, Plus, ChevronDown, Download } from "lucide-react";
+import { Play, ChevronDown } from "lucide-react";
 import { C } from "@/lib/tokens";
 import { useAppStore } from "@/store/app.store";
-import { api } from "@/lib/api.lib";
 
 interface BenchmarkResult {
     prompt: string;
     results: Record<
+        string,
+        { latencyMs: number; tokens: number; costUsd: number; pass: boolean }
+    >;
+}
+
+interface BenchmarkRow {
+    prompt: string;
+    results?: Record<
         string,
         { latencyMs: number; tokens: number; costUsd: number; pass: boolean }
     >;
@@ -94,12 +101,8 @@ function MiniBar({ pct, color }: { pct: number; color: string }) {
 }
 
 export function BenchmarkPage() {
-    const [models, setModels] = useState([
-        "gpt-4o",
-        "claude-sonnet-4-6",
-        "groq"
-    ]);
-    const [promptSet, setPromptSet] = useState("Reasoning suite · 24 prompts");
+    const [models] = useState(["gpt-4o", "claude-sonnet-4-6", "groq"]);
+    const [promptSet] = useState("Reasoning suite · 24 prompts");
     const [running, setRunning] = useState(false);
     const [results, setResults] = useState<BenchmarkResult[]>([]);
     const { pushTerminalLine } = useAppStore();
@@ -309,7 +312,18 @@ export function BenchmarkPage() {
                     {/* Rows */}
                     {(results.length > 0
                         ? results
-                        : DEFAULT_PROMPTS.map(p => ({ prompt: p, results: {} }))
+                        : DEFAULT_PROMPTS.map(p => ({
+                              prompt: p,
+                              results: {} as Record<
+                                  string,
+                                  {
+                                      latencyMs: number;
+                                      tokens: number;
+                                      costUsd: number;
+                                      pass: boolean;
+                                  }
+                              >
+                          }))
                     ).map((row, ri) => (
                         <div
                             key={ri}

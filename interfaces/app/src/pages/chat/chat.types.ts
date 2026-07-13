@@ -2,11 +2,11 @@ export interface Message {
     id: string;
     role: "user" | "assistant" | "system";
     content: string;
-    model?: string;
-    tokens?: number;
-    costUsd?: number;
+    model?: string | undefined;
+    tokens?: number | undefined;
+    costUsd?: number | undefined;
     createdAt: number;
-    files?: AttachedFile[];
+    files?: AttachedFile[] | undefined;
 }
 
 export interface AttachedFile {

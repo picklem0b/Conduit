@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Upload, Send, Plus, ChevronDown } from "lucide-react";
+import { Upload, Send, Plus } from "lucide-react";
 import { C } from "@/lib/tokens";
 import { useAppStore } from "@/store/app.store";
 
@@ -27,7 +27,7 @@ const FAKE_DOCS: Doc[] = [
 ];
 
 export function RagPage() {
-    const [docs, setDocs] = useState<Doc[]>(FAKE_DOCS);
+    const [docs] = useState<Doc[]>(FAKE_DOCS);
     const [messages, setMessages] = useState<Message[]>([
         {
             role: "assistant",
@@ -100,7 +100,7 @@ export function RagPage() {
                             gap: 6
                         }}
                     >
-                        <ConfigRow label="embed model" value={embedModel}>
+                        <ConfigRow label="embed model">
                             <select
                                 value={embedModel}
                                 onChange={e => setEmbedModel(e.target.value)}
@@ -530,11 +530,9 @@ const inputStyle: React.CSSProperties = {
 };
 function ConfigRow({
     label,
-    value,
     children
 }: {
     label: string;
-    value?: string;
     children: React.ReactNode;
 }) {
     return (

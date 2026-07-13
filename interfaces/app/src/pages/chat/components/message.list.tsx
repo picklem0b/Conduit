@@ -1,5 +1,4 @@
 import { useRef, useEffect } from "react";
-import { C } from "@/lib/tokens";
 import { MessageBubble } from "./message.bubble";
 import { CascadeEventChip } from "./cascade.event";
 import type { Message, CascadeEvent } from "../chat.types";
@@ -38,7 +37,7 @@ export function MessageList({
             >
                 {messages.map((msg, i) => {
                     const cascadesHere = cascadeEvents.filter(
-                        (c, ci) => ci === i
+                        (_c, ci) => ci === i
                     );
                     return (
                         <div key={msg.id}>
@@ -54,9 +53,9 @@ export function MessageList({
                     <MessageBubble
                         message={{
                             id: "__stream__",
-                            role: "assistant",
+                            role: "assistant" as const,
                             content: streamContent,
-                            model: streamModel,
+                            ...(streamModel ? { model: streamModel } : {}),
                             createdAt: Date.now()
                         }}
                         streaming
